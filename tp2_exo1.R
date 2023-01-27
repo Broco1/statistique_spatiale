@@ -142,10 +142,50 @@ set_units(st_distance(centroid_dept_bretagne[centroid_dept_bretagne$dep=="22",],
                       communes_Bretagne[communes_Bretagne$libelle=="Saint-Brieuc",]),
           value = km)
 
+chefs_lieux<-communes_Bretagne %>% 
+  filter(libelle%in%c("Saint-Brieuc","Quimper","Rennes","Vannes"))
+
+distance<-st_distance(
+  chefs_lieux %>% 
+    arrange(dep),
+  centroid_dept_bretagne %>% 
+    arrange(dep),
+  by_element = T  # Une seule ligne plutôt qu'une matrice de distance
+)
+
 buffer<-st_buffer(centroid_dept_bretagne,20000)
-plot(buffer$geometry)
 str(buffer)
 
+ggplot()+
+  geom_sf(data=dept_bretagne,fill='steelblue')+
+  geom_sf(data=centroid_dept_bretagne)+
+  #geom_sf_label(data=centroid_dept_bretagne, aes(label=dept_lib),size=4)+
+  geom_sf(data=buffer,fill=NA)+
+  geom_sf(data=chefs_lieux, fill="yellow")
+  theme_light()
+
 st_intersection(buffer,
-              communes_Bretagne %>% 
-                filter(libelle%in%c("Saint-Brieuc","Quimper","Rennes","Vannes")))
+              chefs_lieux)
+
+# rmq: la géométrie ne contient que la partie de la commune dans le buffer
+ggplot()+
+  geom_sf(data = dept_bretagne,fill='steelblue')+
+  geom_sf(data=st_intersection(buffer,chefs_lieux),fill='yellow')+
+  geom_sf(data=buffer,fill=NA)
+
+# On prend st_intersect pour prendre toute la commune
+str(st_intersects(chefs_lieux,buffer))
+chefs_lieux[unlist(st_intersects(chefs_lieux,buffer)),]
+
+ggplot()+
+  geom_sf(data = dept_bretagne,fill='steelblue')+
+  geom_sf(data=chefs_lieux[unlist(st_intersects(chefs_lieux,buffer)),],fill='yellow')+
+  geom_sf(data=buffer,fill=NA)
+
+
+
+
+
+
+
+
