@@ -1,9 +1,7 @@
 # git clone GIT_REPOSITORY
 # git add *.R
-
-
-
-
+# git commit -m " "
+# git push
 
 
 # Si on veut enlever du git add
