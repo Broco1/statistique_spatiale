@@ -1,4 +1,5 @@
 # git clone GIT_REPOSITORY
+# cd statistique_spatiale
 # git add *.R
 # git commit -m " "
 # git push
